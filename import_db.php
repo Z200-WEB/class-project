@@ -25,20 +25,29 @@ try {
         die("Could not read database_utf8.sql");
     }
 
-    // Remove UTF-8 BOM if present
+    // Remove UTF-8 BOM
     $sql = preg_replace('/^\xEF\xBB\xBF/', '', $sql);
+    // Remove MySQL conditional comments /*!...*/
+    $sql = preg_replace('/\/\*!\d+.*?\*\//', '', $sql);
+    // Remove SQL comments
+    $sql = preg_replace('/--.*$/m', '', $sql);
+    // Remove LOCK/UNLOCK TABLES
+    $sql = preg_replace('/LOCK TABLES.*?;/i', '', $sql);
+    $sql = preg_replace('/UNLOCK TABLES.*?;/i', '', $sql);
 
-    // Remove comment lines and split into individual statements
+    // Split into statements and execute
     $statements = array_filter(
         array_map('trim', explode(';', $sql)),
-        function($s) { return !empty($s) && strpos($s, '--') !== 0; }
+        function($s) { return !empty($s); }
     );
 
+    $count = 0;
     foreach ($statements as $stmt) {
         $pdo->exec($stmt);
+        $count++;
     }
-    echo "Database imported successfully!<br>";
-    echo "Tables created. You can now DELETE this file (import_db.php) and database_utf8.sql from your repo.";
+    echo "Database imported successfully! ($count statements executed)<br>";
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    echo "Error: " . $e->getMessage() . "<br>";
+    echo "Failed statement: " . htmlspecialchars(substr($stmt, 0, 200));
 }
