@@ -25,8 +25,18 @@ try {
         die("Could not read database_utf8.sql");
     }
 
-    $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-    $pdo->exec($sql);
+    // Remove UTF-8 BOM if present
+    $sql = preg_replace('/^\xEF\xBB\xBF/', '', $sql);
+
+    // Remove comment lines and split into individual statements
+    $statements = array_filter(
+        array_map('trim', explode(';', $sql)),
+        function($s) { return !empty($s) && strpos($s, '--') !== 0; }
+    );
+
+    foreach ($statements as $stmt) {
+        $pdo->exec($stmt);
+    }
     echo "Database imported successfully!<br>";
     echo "Tables created. You can now DELETE this file (import_db.php) and database_utf8.sql from your repo.";
 } catch (PDOException $e) {
