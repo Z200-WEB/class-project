@@ -19,7 +19,7 @@ $id = (int)$_GET['id'];
 
 try {
     // Delete category from database (lowercase table name)
-    $sql = "DELETE FROM scategory WHERE id = :id";
+    $sql = "DELETE FROM sCategory WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
     $stmt->execute();

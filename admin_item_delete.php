@@ -19,7 +19,7 @@ $id = (int)$_GET['id'];
 
 try {
     // Delete item from database (lowercase table name)
-    $sql = "DELETE FROM sitem WHERE id = :id";
+    $sql = "DELETE FROM sItem WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
