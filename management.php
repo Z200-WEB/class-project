@@ -619,6 +619,13 @@ document.getElementById('paymentModal').addEventListener('click', function(e) {
         closePaymentModal();
     }
 });
+
+// Auto-refresh every 10 seconds (skip if modal is open)
+setInterval(() => {
+    if (document.getElementById('paymentModal').style.display === 'none') {
+        location.reload();
+    }
+}, 10000);
 </script>
 
 </body>
