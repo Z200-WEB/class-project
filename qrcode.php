@@ -2,7 +2,9 @@
 require_once 'auth.php';
 requireAuth();
 
-$baseUrl = 'https://restaurant-project-production-a27b.up.railway.app/index.php?tableNo=';
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'];
+$baseUrl = $protocol . '://' . $host . '/index.php?tableNo=';
 $tables = 5;
 ?>
 <!DOCTYPE html>
